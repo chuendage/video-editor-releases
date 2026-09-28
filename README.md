@@ -1,23 +1,25 @@
 # 字幕工坊 Windows 测试版
 
-当前内测版本：**0.4.2**。适用于 Windows 10/11 x64。
+当前内测版本：**0.4.3**。适用于 Windows 10/11 x64。
 
-[0.4.2 发布记录](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.2)
+[0.4.3 发布记录](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.3)
 
-本版为 **Pre-release**，优化 CapCut 万字符配音速度、自动 Edge 兜底和进度显示，包含完整桌面批量工作流。员工可免登录下载，无需安装 Python。
+本版为 **Pre-release**，改为逐条配音、8 并发和按字幕时间戳装配多条音频轨，包含完整桌面批量工作流。员工可免登录下载，无需安装 Python。
 
-- [下载安装包（推荐）](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.2/VideoWorkflow-0.4.2-setup.exe)：双击安装，按向导完成后从快捷方式启动。
-- [下载便携版](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.2/VideoWorkflow-0.4.2-windows-x64-portable.zip)：完整解压到可写目录，双击 `VideoWorkflow.exe`，保留整个目录。
+- [下载安装包（推荐）](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.3/VideoWorkflow-0.4.3-setup.exe)：双击安装，按向导完成后从快捷方式启动。
+- [下载便携版](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.3/VideoWorkflow-0.4.3-windows-x64-portable.zip)：完整解压到可写目录，双击 `VideoWorkflow.exe`，保留整个目录。
 
 两种包均包含 Python 运行时、Faster-Whisper small 多语言模型、FFmpeg 和 CapCut SDK。首次本地识别无需联网下载模型；云端识别、校正翻译和配音仍需要联网。`update.zip` 与 `version.json` 由软件升级器使用，首次安装无需单独下载。
 
-## 0.4.2 修复
+## 0.4.3 更新
 
-配音按约 4,500 字符打包，每批只提交一个合成任务；批内短文本项一起提交，并行下载后按原顺序拼接。CapCut 不可用时默认补齐 Edge-TTS 兜底，使用对应语言音色。配音显示第几块、总块数、实际服务和实时耗时。
+每条字幕合成一段独立音频，以该字幕的开始时间放到剪映时间轴上；音频重叠时使用下一条空闲旁白轨，保留每段完整时长。默认 8 并发，多任务共享最多 8 个请求槽位，失败退避并自动降级 Edge-TTS。轮询接受实际成功状态 `succeed`。
 
-开发机实测 10,000 字符英文样本：CapCut 提交 3 次，27.017 秒完成（含下载、转 WAV 和拼接）；真实失败兜底由 Edge 在 31.178 秒完成。不是员工 Windows、Alex 音色或完整视频工作流耗时保证。
+草稿中的译文字幕与配音使用相同时间锚点；重新识别的 `05_final_<lang>.srt` 保留为核对文件。取消、重试复用已完成音频缓存，草稿重建保留上一份备份。
 
-旧失败任务可在升级后点击“继续选中 / 重试失败”，复用有效的识别、校正和翻译结果；配音按新方式重新分批。新批次音频可缓存续跑。
+开发机真实 CapCut 测速：10,000 字符、150 条不同英文字幕、全新本地缓存，88.727 秒完成合成、下载、转换和时间轴装配，生成 150 段音频、3 条旁白轨。包含一次退避 2 秒后成功的重试。此数据来自 macOS 源码环境的合成文案，不保证员工 Windows、Alex 音色、其他语言或完整视频工作流达到相同耗时。
+
+已有任务升级后：选中任务 → 步骤下拉框选“配音” → “从此步重跑选中” → 完成后“生成 / 重建选中草稿”。识别、校正和翻译结果可复用；只重建旧连续旁白会提示先重跑配音。语言和音色沿用任务快照，要更换则创建新任务。
 
 ## 主要功能
 
@@ -29,7 +31,7 @@
 
 ## 首次测试
 
-1. 在“软件更新”核对当前版本为 **0.4.2**。
+1. 在“软件更新”核对当前版本为 **0.4.3**。
 2. “服务与配音设置”：填写 LLM 地址、模型并保存密钥；配置目标语言音色，试音成功后启用保存。CapCut 英语示例 `en_us_006|7114563482518819329`，Edge 英语示例 `en-US-AriaNeural`；其他语言需要对应音色。付费服务试音可能计费。
 3. “剪映与导出”：选择实际 `JianyingPro.exe`、草稿根目录、成片目录及账号可用的滤镜；在“识别与 BGM 设置”选择背景音乐。
 4. “批量任务”：先用一个有权处理的短视频测试识别 → 校正改错 → 翻译 → 配音 → 识别配音字幕 → 草稿。双击任务查看实际提供商、降级原因及每步产物。
@@ -41,7 +43,7 @@
 
 ## 已有版本升级
 
-已有 0.2.0 / 0.3.0 / 0.4.0 / 0.4.1 用户先备份安装目录的 `userdata/`，进入“软件更新”，选择“测试通道”并保存，点击“检查更新”，再点击“下载并安装，完成后重启”。升级器校验签名和 SHA-256，新版本启动失败时恢复上一版本。
+已有 0.2.0 / 0.3.0 / 0.4.0 / 0.4.1 / 0.4.2 用户先备份安装目录的 `userdata/`，进入“软件更新”，选择“测试通道”并保存，点击“检查更新”，再点击“下载并安装，完成后重启”。升级器校验签名和 SHA-256，新版本启动失败时恢复上一版本。
 
 已有安装优先使用软件内更新；再次运行安装包会保留原版本指针。
 
@@ -49,11 +51,11 @@
 
 ## 验证范围
 
-- 由 GitHub Actions 从代码 `600acbe` 构建并在全部检查通过后发布。
-- Windows **193 项测试通过，0 失败、0 跳过**；已通过打包桌面启动、真实离线 ASR、云端不可用时本地兜底、原生滤镜/BGM 草稿、SDK/UIA 冻结入口、安装与保留数据卸载、升级/重启/损坏程序回滚检查。
+- 由 GitHub Actions 从代码 `5ed2280` 构建并在全部检查通过后发布。
+- Windows **205 项测试通过，0 失败、0 跳过**；已通过打包桌面启动、真实离线 ASR、云端不可用时本地兜底、逐条音频时间轴及原生滤镜/BGM 草稿、SDK/UIA 冻结入口、安装与保留数据卸载、升级/重启/损坏程序回滚检查。
 - 升级冒烟使用当前程序构造的旧版本指针；员工现有配置的原位升级仍需真机验收。
 - CapCut 和 Edge 已在开发机用自建短句完成真实合成。员工 Windows 的音色效果、火山/MiniMax/LLM 实际账号及长视频稳定性仍需验收。CI 未安装剪映，未将依赖导入或草稿文件生成视为实际剪映导出成功。
 
 失败时记录软件、Windows、剪映完整版本号和错误码；导出诊断入口为“剪映与导出 → 打开本机导出诊断与截图”。不要提供 API Key。任务、字幕和设置保存在本机 `userdata/`，卸载保留该目录。
 
-[上一版 0.4.1](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.1) · [beta 测试通道](https://github.com/chuendage/video-editor-releases/releases/tag/beta)
+[上一版 0.4.2](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.2) · [beta 测试通道](https://github.com/chuendage/video-editor-releases/releases/tag/beta)

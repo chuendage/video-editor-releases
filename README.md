@@ -1,17 +1,21 @@
 # 字幕工坊 Windows 测试版
 
-当前内测版本：**0.4.0**。适用于 Windows 10/11 x64。
+当前内测版本：**0.4.1**。适用于 Windows 10/11 x64。
 
-[0.4.0 发布记录](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.0)
+[0.4.1 发布记录](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.1)
 
-本版为 **Pre-release**，新增完整桌面批量工作流。员工可免登录下载，无需安装 Python。
+本版为 **Pre-release**，修复 LLM 连接检查反馈，包含完整桌面批量工作流。员工可免登录下载，无需安装 Python。
 
-- [下载安装包（推荐，约 657 MiB）](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.0/VideoWorkflow-0.4.0-setup.exe)：双击安装，按向导完成后从快捷方式启动。
-- [下载便携版（约 761 MiB）](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.0/VideoWorkflow-0.4.0-windows-x64-portable.zip)：完整解压到可写目录，双击 `VideoWorkflow.exe`，保留整个目录。
+- [下载安装包（推荐）](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.1/VideoWorkflow-0.4.1-setup.exe)：双击安装，按向导完成后从快捷方式启动。
+- [下载便携版](https://github.com/chuendage/video-editor-releases/releases/download/beta-v0.4.1/VideoWorkflow-0.4.1-windows-x64-portable.zip)：完整解压到可写目录，双击 `VideoWorkflow.exe`，保留整个目录。
 
 两种包均包含 Python 运行时、Faster-Whisper small 多语言模型、FFmpeg 和 CapCut SDK。首次本地识别无需联网下载模型；云端识别、校正翻译和配音仍需要联网。`update.zip` 与 `version.json` 由软件升级器使用，首次安装无需单独下载。
 
-## 本版新增
+## 0.4.1 修复
+
+点击“检查 LLM 连接”后，进度、成功或错误直接显示在按钮下方；支持取消并限制整次检查的总等待时间。配音参数未填完不会阻止 LLM 检查。密钥存入凭据库后仍需验证连接，并点击页面底部的“保存服务与音色设置”。
+
+## 主要功能
 
 - **批量任务**：添加视频、递归导入文件夹、拖入路径；按视频 × 目标语言创建独立任务。可填写改错/翻译提示词、术语表，保存项目，开始、暂停派发、取消、续跑及从指定步骤重跑。
 - **服务与配音设置**：配置 LLM 和四路 TTS，拖动调整 CapCut → 火山 → MiniMax → Edge 的降级顺序，设置开关及各服务的语言音色。密钥写入 Windows 凭据库；新增或更改服务后先试音再保存。
@@ -21,7 +25,7 @@
 
 ## 首次测试
 
-1. 在“软件更新”核对当前版本为 **0.4.0**。
+1. 在“软件更新”核对当前版本为 **0.4.1**。
 2. “服务与配音设置”：填写 LLM 地址、模型并保存密钥；配置目标语言音色，试音成功后启用保存。CapCut 英语示例 `en_us_006|7114563482518819329`，Edge 英语示例 `en-US-AriaNeural`；其他语言需要对应音色。付费服务试音可能计费。
 3. “剪映与导出”：选择实际 `JianyingPro.exe`、草稿根目录、成片目录及账号可用的滤镜；在“识别与 BGM 设置”选择背景音乐。
 4. “批量任务”：先用一个有权处理的短视频测试识别 → 校正改错 → 翻译 → 配音 → 识别配音字幕 → 草稿。双击任务查看实际提供商、降级原因及每步产物。
@@ -33,17 +37,19 @@
 
 ## 已有版本升级
 
-已有 0.2.0 / 0.3.0 用户先备份安装目录的 `userdata/`，进入“软件更新”，选择“测试通道”并保存，点击“检查更新”，再点击“下载并安装，完成后重启”。升级器校验签名和 SHA-256，新版本启动失败时恢复上一版本。
+已有 0.2.0 / 0.3.0 / 0.4.0 用户先备份安装目录的 `userdata/`，进入“软件更新”，选择“测试通道”并保存，点击“检查更新”，再点击“下载并安装，完成后重启”。升级器校验签名和 SHA-256，新版本启动失败时恢复上一版本。
+
+已有安装优先使用软件内更新；再次运行安装包会保留原版本指针。
 
 更新基础地址：`https://github.com/chuendage/video-editor-releases/releases/download`。本次只更新 beta 测试通道；应用默认的正式通道暂未发布版本。
 
 ## 验证范围
 
-- 原样发布候选代码 `3551a82` 的构建产物，没有重新打包。
-- Windows **166 项测试通过，0 失败、0 跳过**；已通过打包桌面启动、真实离线 ASR、云端不可用时本地兜底、原生滤镜/BGM 草稿、SDK/UIA 冻结入口、安装与保留数据卸载、升级/重启/损坏程序回滚检查。
-- 升级冒烟使用当前程序构造的旧版本指针；员工现有 0.3.0 配置的原位升级仍需真机验收。
+- 由 GitHub Actions 从代码 `87f7e6e` 构建并在全部检查通过后发布。
+- Windows **178 项测试通过，0 失败、0 跳过**；已通过打包桌面启动、真实离线 ASR、云端不可用时本地兜底、原生滤镜/BGM 草稿、SDK/UIA 冻结入口、安装与保留数据卸载、升级/重启/损坏程序回滚检查。
+- 升级冒烟使用当前程序构造的旧版本指针；员工现有配置的原位升级仍需真机验收。
 - CapCut 和 Edge 已在开发机用自建短句完成真实合成。员工 Windows 的音色效果、火山/MiniMax/LLM 实际账号及长视频稳定性仍需验收。CI 未安装剪映，未将依赖导入或草稿文件生成视为实际剪映导出成功。
 
 失败时记录软件、Windows、剪映完整版本号和错误码；导出诊断入口为“剪映与导出 → 打开本机导出诊断与截图”。不要提供 API Key。任务、字幕和设置保存在本机 `userdata/`，卸载保留该目录。
 
-[上一版 0.3.0](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.3.0) · [beta 测试通道](https://github.com/chuendage/video-editor-releases/releases/tag/beta)
+[上一版 0.4.0](https://github.com/chuendage/video-editor-releases/releases/tag/beta-v0.4.0) · [beta 测试通道](https://github.com/chuendage/video-editor-releases/releases/tag/beta)
